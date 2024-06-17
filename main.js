@@ -6,35 +6,28 @@ class List extends HTMLElement{
 
         this.divHeader = document.createElement('div')
         this.divContent = document.createElement("div")
-        this.modePicture = false;
 
         shadow.appendChild(this.divHeader)
         shadow.appendChild(this.divContent)
     }
 
-    connectedCallback(){
-        this.divHeader.innerHTML = this.getAttribute("data-title")
+    connectedCallback(){ 
+        this.divHeader.innerHTML = this.getAttribute("data-title") || ""
         
         let url = this.getAttribute("data-url")
         let field = this.getAttribute("data-field")
-        if(this.getAttribute("modePicture")){
-            this.modePicture = this.getAttribute("modePicture")
+
+        if (!url || !field){
+            return
         }
 
-        this.divContent.innerHTML = "";
+        const isPicture = this.hasAttribute("modePicture")
+
         fetch(url)
         .then(response => response.json())
         .then(users => users.forEach(element => {
-            if(this.modePicture === 'true'){
-                this.divContent.innerHTML += `<img src='${element[field]}'></img>`
-            }else{
-                this.divContent.innerHTML += `<div>
-            ${element[field]}
-            </div>` 
-            }
-            
+            this.divContent.innerHTML += isPicture ? `<img src='${element[field]}'>` : `<div>${element[field]}</div>` 
         }));
-
     }
 }
 
